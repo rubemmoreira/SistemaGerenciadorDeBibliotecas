@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class LoginController {
 
-    // Mapeia a URL raiz "/" para o template "index" (que corresponde a index.html)
+    // Mapeia a URL raiz "/" para o template "index" (página principal)
     @GetMapping("/")
     public String index() {
-        return "index"; // Retorna o nome do template: index.html
+        return "index"; 
     }
 
-    // Mapeia a URL de login para o template "login" (que corresponde a login.html)
-    @GetMapping("/login.html")
+    // Mapeia a URL de login para o template "login"
+    @GetMapping("/login") // Mapeamento corrigido
     public String login() {
         return "login"; // Retorna o nome do template: login.html
     }
