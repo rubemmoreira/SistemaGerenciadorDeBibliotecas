@@ -64,6 +64,12 @@
             margin-top: 10px;
             text-align: center;
         }
+
+        .logout {
+            color: green;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -72,19 +78,22 @@
             <h2>Acesso ao Sistema</h2>
             
             <div class="form-group">
-                <label>Email:</label>
-                <input type="email" name="username" required>
+                <label for="username">Email:</label>
+                <input type="email" id="username" name="username" placeholder="Email" required>
             </div>
             
             <div class="form-group">
-                <label>Senha:</label>
-                <input type="password" name="password" required>
+                <label for="password">Senha:</label>
+                <input type="password" id="password" name="password" placeholder="Senha" required>
             </div>
             
             <button type="submit">Entrar</button>
             
             <div th:if="${param.error}" class="error">
                 Email ou senha inválidos!
+            </div>
+            <div th:if="${param.logout}" class="logout">
+                Logout realizado com sucesso!
             </div>
         </form>
     </div>
