@@ -1,29 +1,23 @@
-<!-- Card para Gerenciar Usuários -->
-<div class="menu-card">
-    <div class="menu-icon">👥</div>
-    <h3>Gerenciar Usuários</h3>
-    <p>Administre os usuários do sistema e suas permissões de acesso</p>
-    <div class="card-actions">
-        <a th:href="@{/usuarios}" class="btn btn-primary">👥 Gerenciar Usuários</a>
-    </div>
-</div>
-
-<!-- Card para Gerenciar Empréstimos -->
-<div class="menu-card">
-    <div class="menu-icon">🔄</div>
-    <h3>Gerenciar Empréstimos</h3>
-    <p>Controle os empréstimos, devoluções e reservas de livros</p>
-    <div class="card-actions">
-        <a th:href="@{/emprestimos}" class="btn btn-primary">🔄 Gerenciar Empréstimos</a>
-    </div>
-</div>
-
-<!-- Card para Relatórios -->
-<div class="menu-card">
-    <div class="menu-icon">📊</div>
-    <h3>Relatórios e Estatísticas</h3>
-    <p>Visualize relatórios detalhados e estatísticas do sistema</p>
-    <div class="card-actions">
-        <a th:href="@{/relatorios}" class="btn btn-primary">📊 Ver Relatórios</a>
-    </div>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Biblioteca - Home</title>
+</head>
+<body>
+    <h1>🏠 PÁGINA HOME - FUNCIONANDO!</h1>
+    <p>Login bem-sucedido! Sistema de Biblioteca.</p>
+    
+    <h2>Menu Principal</h2>
+    <ul>
+        <li><a href="/livros">📖 Gerenciar Livros</a></li>
+        <li><a href="/usuarios">👥 Gerenciar Usuários</a></li>
+        <li><a href="/emprestimos">🔄 Gerenciar Empréstimos</a></li>
+        <li><a href="/relatorios">📊 Relatórios</a></li>
+    </ul>
+    
+    <form action="/logout" method="post">
+        <button type="submit">🚪 Sair</button>
+    </form>
+</body>
+</html>
