@@ -13,8 +13,13 @@ public class Livro {
     private String titulo;
     private String autor;
     private String isbn;
+    private String editora;
+    private Integer anoPublicacao;
+    private String categoria;
+    private Integer quantidade;
+    private String descricao;
     
-    // Getters e Setters
+    // Getters e Setters COMPLETOS
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
@@ -26,4 +31,19 @@ public class Livro {
     
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
+    
+    public String getEditora() { return editora; }
+    public void setEditora(String editora) { this.editora = editora; }
+    
+    public Integer getAnoPublicacao() { return anoPublicacao; }
+    public void setAnoPublicacao(Integer anoPublicacao) { this.anoPublicacao = anoPublicacao; }
+    
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
+    
+    public Integer getQuantidade() { return quantidade; }
+    public void setQuantidade(Integer quantidade) { this.quantidade = quantidade; }
+    
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
 }

@@ -1,21 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Biblioteca</title>
-    <link rel="stylesheet" href="/css/login.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .test-credentials {
+            background: #e7f3ff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .test-credentials h4 {
+            margin-bottom: 0.5rem;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
     <div class="login-container">
-        <h2>Login do Sistema</h2>
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="Seu email" required>
-            <input type="password" id="senha" placeholder="Sua senha" required>
-            <button type="submit">Entrar</button>
-        </form>
-        <div id="mensagemErro" class="error"></div>
-    </div>
+        <div class="login-header">
+            <h1>📚 Biblioteca</h1>
+            <p>Faça login para continuar</p>
+        </div>
 
-    <script src="/js/auth.js"></script>
+        <!-- Mensagens -->
+        <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+        <!-- Formulário de Login DO SPRING SECURITY -->
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">📧 Email</label>
+                <input type="email" id="username" name="username" class="form-control" 
+                       placeholder="seu@email.com" required value="admin@biblioteca.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">🔒 Senha</label>
+                <input type="password" id="password" name="password" class="form-control" 
+                       placeholder="Sua senha" required value="123456">
+            </div>
+            
+            <button type="submit" class="btn">🚀 Entrar no Sistema</button>
+        </form>
+
+        <!-- Credenciais de teste -->
+        <div class="test-credentials">
+            <h4>👤 Credenciais de Teste:</h4>
+            <p><strong>Email:</strong> admin@biblioteca.com</p>
+            <p><strong>Senha:</strong> 123456</p>
+        </div>
+    </div>
 </body>
 </html>

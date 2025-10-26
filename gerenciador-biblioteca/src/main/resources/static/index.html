@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Biblioteca - Dashboard</title>
-    
+    <title>Biblioteca - Página Principal</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,15 +15,47 @@
             flex-direction: column;
             align-items: center;
         }
+        
         .header {
             background-color: #007bff;
             color: white;
             width: 100%;
-            text-align: center;
             padding: 20px 0;
             margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-height: 50px;
         }
+        
+        .header-content {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .main-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
         .container {
             width: 90%;
             max-width: 1200px;
@@ -33,6 +63,7 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
+        
         .card {
             background-color: white;
             border-radius: 8px;
@@ -48,72 +79,107 @@
             align-items: center;
             justify-content: center;
         }
+        
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+        
         .card h2 {
             margin-top: 15px;
             font-size: 1.5em;
             color: #007bff;
         }
+        
         .card p {
             color: #6c757d;
         }
+        
         .icon {
             font-size: 3em;
             color: #007bff;
         }
         
-        /* Ícones simples usando Unicode (substitua por Font Awesome ou SVGs se desejar) */
         .icon-livro::before { content: "📚"; }
         .icon-pesquisa::before { content: "🔍"; }
         .icon-usuario::before { content: "👤"; }
-        .icon-devolucao::before { content: "↩️"; }
         .icon-emprestimo::before { content: "📤"; }
-
+        .icon-relatorio::before { content: "📊"; }
+        
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .user-info {
+            display: none; /* Ocultar informações do usuário no header */
+        }
     </style>
 </head>
 <body>
-
     <div class="header">
+        <div class="header-content">
+            <div class="user-info" th:if="${#authorization.expression('isAuthenticated()')}">
+                <span th:text="'Usuário: ' + ${#authentication.name}"></span>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit" class="logout-btn">
+                        Sair
+                    </button>
+                </form>
+            </div>
+            <div th:unless="${#authorization.expression('isAuthenticated()')}">
+                <a th:href="@{/login}" class="logout-btn" style="background-color: #28a745; text-decoration: none;">
+                    Login
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-title">
         <h1>Sistema de Gerenciamento de Biblioteca</h1>
-        <p>Selecione uma funcionalidade para começar.</p>
+        <div class="welcome-message">
+            <h2 th:if="${#authorization.expression('isAuthenticated()')}">
+                ✅ Login realizado com sucesso!
+            </h2>
+            <h2 th:unless="${#authorization.expression('isAuthenticated()')}">
+                Bem-vindo ao Sistema de Biblioteca
+            </h2>
+            
+            <div th:if="${#authorization.expression('isAuthenticated()')}">
+                <p>Você está autenticado no sistema. Selecione uma opção abaixo:</p>
+            </div>
+            
+            <div th:unless="${#authorization.expression('isAuthenticated()')}">
+                <p>Faça login para acessar todas as funcionalidades do sistema.</p>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-        
-        <a th:href="@{/livros/cadastro}" class="card">
+    <div class="container" th:if="${#authorization.expression('isAuthenticated()')}">
+        <a th:href="@{/livros}" class="card">
             <span class="icon icon-livro"></span>
-            <h2>Cadastro de Livros</h2>
-            <p>Adicionar novos títulos ao acervo da biblioteca.</p>
-        </a>
-
-        <a th:href="@{/livros/pesquisa}" class="card">
-            <span class="icon icon-pesquisa"></span>
-            <h2>Pesquisa Avançada</h2>
-            <p>Buscar por título, autor, ou categoria no acervo.</p>
+            <h2>Gerenciar Livros</h2>
+            <p>Cadastre, edite, visualize e gerencie todos os livros do acervo da biblioteca</p>
         </a>
 
         <a th:href="@{/usuarios}" class="card">
             <span class="icon icon-usuario"></span>
-            <h2>Gestão de Usuários</h2>
-            <p>Cadastrar, visualizar e gerenciar os leitores.</p>
+            <h2>Gerenciar Usuários</h2>
+            <p>Administre os usuários do sistema e suas permissões de acesso</p>
         </a>
 
-        <a th:href="@{/emprestimos/registro}" class="card">
+        <a th:href="@{/emprestimos}" class="card">
             <span class="icon icon-emprestimo"></span>
-            <h2>Registro de Empréstimos</h2>
-            <p>Formalizar a retirada de um livro por um leitor.</p>
+            <h2>Gerenciar Empréstimos</h2>
+            <p>Controle os empréstimos, devoluções e reservas de livros</p>
         </a>
 
-        <a th:href="@{/devolucoes/registro}" class="card">
-            <span class="icon icon-devolucao"></span>
-            <h2>Registro de Devoluções</h2>
-            <p>Dar baixa nos livros que estão sendo devolvidos.</p>
+        <a th:href="@{/relatorios}" class="card">
+            <span class="icon icon-relatorio"></span>
+            <h2>Relatórios e Estatísticas</h2>
+            <p>Visualize relatórios detalhados e estatísticas do sistema</p>
         </a>
-
     </div>
-
 </body>
 </html>

@@ -32,7 +32,7 @@ public class UsuarioService implements UserDetailsService {
         
         return User.builder()
             .username(usuario.getEmail())
-            .password(usuario.getSenha())
+            .password(usuario.getSenha()) // Senha em texto puro
             .roles("USER")
             .build();
     }
