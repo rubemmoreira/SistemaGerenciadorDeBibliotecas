@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Livro - Biblioteca</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .livro-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .livro-titulo {
+            font-size: 2rem;
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+
+        .livro-autor {
+            font-size: 1.2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .livro-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .livro-descricao {
+            margin-bottom: 2rem;
+        }
+
+        .descricao-titulo {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .descricao-texto {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            font-style: italic;
+            line-height: 1.8;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .livro-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .livro-titulo {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>📚 Sistema de Gerenciamento de Biblioteca</h1>
+            <div>
+                <a th:href="@{/livros}" class="btn btn-secondary">📖 Voltar à Lista</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card" th:if="${livro != null}">
+            <div class="livro-header">
+                <h2 class="livro-titulo" th:text="${livro.titulo}">Título do Livro</h2>
+                <p class="livro-autor" th:text="'por ' + ${livro.autor}">por Autor</p>
+            </div>
+
+            <div class="livro-info">
+                <div class="info-item" th:if="${livro.isbn}">
+                    <span class="info-label">📋 ISBN</span>
+                    <span class="info-value" th:text="${livro.isbn}">ISBN</span>
+                </div>
+                
+                <div class="info-item" th:if="${livro.editora}">
+                    <span class="info-label">🏢 Editora</span>
+                    <span class="info-value" th:text="${livro.editora}">Editora</span>
+                </div>
+                
+                <div class="info-item" th:if="${livro.anoPublicacao}">
+                    <span class="info-label">📅 Ano de Publicação</span>
+                    <span class="info-value" th:text="${livro.anoPublicacao}">2024</span>
+                </div>
+                
+                <div class="info-item" th:if="${livro.categoria}">
+                    <span class="info-label">📂 Categoria</span>
+                    <span class="info-value" th:text="${livro.categoria}">Categoria</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">📦 Quantidade em Estoque</span>
+                    <span class="info-value" th:text="${livro.quantidade} + ' unidades'">1 unidades</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">🆔 ID do Livro</span>
+                    <span class="info-value" th:text="${livro.id}">1</span>
+                </div>
+            </div>
+
+            <div class="livro-descricao" th:if="${livro.descricao}">
+                <div class="descricao-titulo">📝 Descrição</div>
+                <div class="descricao-texto" th:text="${livro.descricao}">
+                    Descrição do livro...
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a th:href="@{'/livros/editar/' + ${livro.id}}" class="btn btn-primary">
+                    ✏️ Editar Livro
+                </a>
+                <a th:href="@{/livros}" class="btn btn-secondary">
+                    📖 Voltar à Lista
+                </a>
+            </div>
+        </div>
+
+        <div class="card" th:if="${livro == null}">
+            <div class="empty-state">
+                <div class="icon">❌</div>
+                <h3>Livro não encontrado</h3>
+                <p>O livro solicitado não foi encontrado ou não existe.</p>
+                <a th:href="@{/livros}" class="btn btn-primary" style="margin-top: 1rem;">
+                    📖 Voltar à Lista de Livros
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

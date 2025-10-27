@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${usuario.id != null ? 'Editar Usuário' : 'Cadastrar Usuário'}">Cadastrar Usuário - Biblioteca</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 2rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group label.required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+
+        .form-control:invalid {
+            border-color: #dc3545;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>👥 Sistema de Gerenciamento de Biblioteca</h1>
+            <div>
+                <a th:href="@{/usuarios}" class="btn btn-secondary">👥 Voltar à Lista</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Mensagens de sucesso/erro -->
+        <div th:if="${success}" class="alert alert-success">
+            ✅ <span th:text="${success}">Operação realizada com sucesso!</span>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger">
+            ❌ <span th:text="${error}">Erro na operação!</span>
+        </div>
+
+        <div class="card">
+            <h2 class="page-title">
+                <span th:text="${usuario.id != null ? '✏️ Editar Usuário' : '➕ Cadastrar Novo Usuário'}">Cadastrar Usuário</span>
+            </h2>
+
+            <form th:action="${usuario.id != null ? '/usuarios/editar/' + usuario.id : '/usuarios/cadastro'}" 
+                  method="post" th:object="${usuario}">
+                
+                <div class="form-group">
+                    <label for="nome" class="required">Nome Completo</label>
+                    <input type="text" id="nome" th:field="*{nome}" class="form-control" required 
+                           placeholder="Digite o nome completo do usuário">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="required">Email</label>
+                    <input type="email" id="email" th:field="*{email}" class="form-control" required
+                           placeholder="Digite o email do usuário">
+                    <div class="help-text">O email será usado para fazer login no sistema</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="senha" class="required">Senha</label>
+                    <input type="password" id="senha" th:field="*{senha}" class="form-control" required
+                           placeholder="Digite a senha do usuário">
+                    <div class="help-text" th:if="${usuario.id != null}">Deixe em branco para manter a senha atual</div>
+                    <div class="help-text" th:if="${usuario.id == null}">Mínimo de 6 caracteres</div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-secondary">🔄 Limpar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span th:text="${usuario.id != null ? '💾 Salvar Alterações' : '💾 Cadastrar Usuário'}">Cadastrar Usuário</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

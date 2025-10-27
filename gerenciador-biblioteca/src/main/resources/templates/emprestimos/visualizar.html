@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Empréstimo - Biblioteca</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { background-color: #007bff; color: white; padding: 1rem 2rem; border-radius: 8px; margin-bottom: 2rem; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-primary:hover { background-color: #0056b3; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #5a6268; }
+        .alert { padding: 1rem; margin-bottom: 1rem; border-radius: 4px; }
+        .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 2rem; }
+        .card-header { font-weight: bold; color: #007bff; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #eee; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 1rem; padding: 0.5rem 0; border-bottom: 1px solid #f8f9fa; }
+        .info-label { color: #666; font-weight: 500; }
+        .info-value { color: #333; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        .status-emprestado { background-color: #d4edda; color: #155724; }
+        .status-devolvido { background-color: #d1ecf1; color: #0c5460; }
+        .actions { display: flex; gap: 1rem; margin-top: 2rem; justify-content: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👁️ Visualizar Empréstimo</h1>
+            <p>Detalhes completos do empréstimo</p>
+        </div>
+
+        <!-- Mensagens de erro -->
+        <div th:if="${error}" class="alert alert-danger">
+            ❌ <span th:text="${error}">Erro na operação!</span>
+        </div>
+
+        <!-- Card com detalhes do empréstimo -->
+        <div class="card" th:if="${emprestimo}">
+            <div class="card-header">
+                <h2>🆔 Empréstimo #<span th:text="${emprestimo.id}">1</span></h2>
+                <span class="status-badge" 
+                      th:classappend="${emprestimo.status.name() == 'EMPRESTADO'} ? 'status-emprestado' : 'status-devolvido'"
+                      th:text="${emprestimo.status.descricao}">Status</span>
+            </div>
+            
+            <div class="card-body">
+                <!-- Informações do Livro -->
+                <div class="info-row">
+                    <span class="info-label">📖 Livro:</span>
+                    <span class="info-value" th:text="${emprestimo.livro.titulo}">Título do Livro</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">✍️ Autor:</span>
+                    <span class="info-value" th:text="${emprestimo.livro.autor}">Nome do Autor</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">🏢 Editora:</span>
+                    <span class="info-value" th:text="${emprestimo.livro.editora}">Editora</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">📅 Ano:</span>
+                    <span class="info-value" th:text="${emprestimo.livro.anoPublicacao}">2024</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">📚 Categoria:</span>
+                    <span class="info-value" th:text="${emprestimo.livro.categoria}">Categoria</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">🔢 ISBN:</span>
+                    <span class="info-value" th:text="${emprestimo.livro.isbn}">978-1234567890</span>
+                </div>
+                
+                <!-- Informações do Usuário -->
+                <div class="info-row">
+                    <span class="info-label">👤 Usuário:</span>
+                    <span class="info-value" th:text="${emprestimo.usuario.nome}">Nome do Usuário</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">📧 Email:</span>
+                    <span class="info-value" th:text="${emprestimo.usuario.email}">email@exemplo.com</span>
+                </div>
+                
+                <!-- Informações do Empréstimo -->
+                <div class="info-row">
+                    <span class="info-label">📅 Data do Empréstimo:</span>
+                    <span class="info-value" th:text="${#temporals.format(emprestimo.dataEmprestimo, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">📅 Devolução Prevista:</span>
+                    <span class="info-value" th:text="${#temporals.format(emprestimo.dataDevolucaoPrevista, 'dd/MM/yyyy HH:mm')}">08/01/2024 10:00</span>
+                </div>
+                
+                <div class="info-row" th:if="${emprestimo.dataDevolucaoReal != null}">
+                    <span class="info-label">✅ Devolução Real:</span>
+                    <span class="info-value" th:text="${#temporals.format(emprestimo.dataDevolucaoReal, 'dd/MM/yyyy HH:mm')}">08/01/2024 10:00</span>
+                </div>
+                
+                <div class="info-row" th:if="${emprestimo.observacoes != null and !emprestimo.observacoes.isEmpty()}">
+                    <span class="info-label">📝 Observações:</span>
+                    <span class="info-value" th:text="${emprestimo.observacoes}">Observações do empréstimo</span>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <a th:href="@{/emprestimos}" class="btn btn-secondary">📋 Voltar à Lista</a>
+                <a th:href="@{/home}" class="btn btn-primary">🏠 Voltar ao Início</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -18,16 +17,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        System.out.println("=== 🔧 CONFIGURANDO SEGURANÇA ===");
-        
         http
             .authorizeHttpRequests(authz -> authz
-                // Permite acesso público a recursos estáticos e endpoints de teste
                 .requestMatchers(
                     "/css/**", "/js/**", "/images/**", "/webjars/**",
-                    "/login", 
-                    "/test-db", "/test-user", "/test-mysql", "/test-connection"  // ← ADICIONE ESTES
+                    "/login", "/home"
                 ).permitAll()
+                // Usuários - apenas ADMIN pode gerenciar, BIBLIOTECARIO pode ver/criar/editar (não deletar)
+                .requestMatchers("/usuarios/deletar/**").hasRole("ADMIN")
+                .requestMatchers("/usuarios/**").hasAnyRole("ADMIN", "BIBLIOTECARIO")
+                // Livros - todos podem ver, apenas ADMIN/BIBLIOTECARIO podem gerenciar
+                .requestMatchers("/livros/cadastro", "/livros/editar/**", "/livros/deletar/**").hasAnyRole("ADMIN", "BIBLIOTECARIO")
+                .requestMatchers("/livros/**").authenticated()
+                // Empréstimos - todos podem ver seus próprios, apenas ADMIN/BIBLIOTECARIO podem gerenciar
+                .requestMatchers("/emprestimos/novo", "/emprestimos/editar/**", "/emprestimos/devolver/**", "/emprestimos/deletar/**").hasAnyRole("ADMIN", "BIBLIOTECARIO")
+                .requestMatchers("/emprestimos/**").authenticated()
+                // Relatórios - apenas ADMIN/BIBLIOTECARIO
+                .requestMatchers("/relatorios/**").hasAnyRole("ADMIN", "BIBLIOTECARIO")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -37,34 +43,27 @@ public class SecurityConfig {
                 .permitAll()
             )
             .logout(logout -> logout
+                .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
                 .permitAll()
             )
+            .sessionManagement(session -> session
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(false)
+                .and()
+                .sessionFixation().migrateSession()
+                .invalidSessionUrl("/login?expired=true")
+            )
+            .csrf(csrf -> csrf.disable())
             .userDetailsService(usuarioService);
 
-        http.csrf(csrf -> csrf.disable());
-        
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence rawPassword) {
-                System.out.println("🔐 Codificando senha: " + rawPassword);
-                return rawPassword.toString();
-            }
-            
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                System.out.println("🔍 Comparando senhas:");
-                System.out.println("   Senha digitada: " + rawPassword);
-                System.out.println("   Senha no banco: " + encodedPassword);
-                boolean match = rawPassword.toString().equals(encodedPassword);
-                System.out.println("   Resultado: " + (match ? "✅ CORRETO" : "❌ INCORRETO"));
-                return match;
-            }
-        };
+    public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
+        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 }

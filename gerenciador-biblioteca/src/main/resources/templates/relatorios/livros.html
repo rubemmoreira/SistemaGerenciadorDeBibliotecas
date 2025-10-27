@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatórios e Estatísticas - Biblioteca</title>
+    <title>Relatório de Livros - Biblioteca</title>
     <style>
         * {
             margin: 0;
@@ -205,22 +205,6 @@
             color: #007bff;
         }
 
-        .chart-bar {
-            width: 100%;
-            height: 8px;
-            background-color: #e9ecef;
-            border-radius: 4px;
-            margin: 0.5rem 0;
-            overflow: hidden;
-        }
-
-        .chart-bar-fill {
-            height: 100%;
-            background-color: #007bff;
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -252,7 +236,7 @@
 <body>
     <header class="header">
         <div class="header-content">
-            <h1>📊 Sistema de Gerenciamento de Biblioteca</h1>
+            <h1>📖 Sistema de Gerenciamento de Biblioteca</h1>
             <div class="user-info">
                 <span>👤 <span th:text="${#authentication.name}">admin@biblioteca.com</span></span>
                 <a th:href="@{/logout}" class="btn btn-secondary">🚪 Sair</a>
@@ -262,32 +246,41 @@
 
     <div class="container">
         <div class="page-header">
-            <h2 class="page-title">📊 Relatórios e Estatísticas</h2>
-            <a th:href="@{/home}" class="btn btn-secondary">🏠 Voltar ao Dashboard</a>
+            <h2 class="page-title">📖 Relatório de Livros</h2>
+            <a th:href="@{/relatorios}" class="btn btn-secondary">📊 Voltar aos Relatórios</a>
         </div>
 
         <!-- Estatísticas Gerais -->
         <div class="stats-grid">
             <div class="stat-card primary">
-                <div class="stat-number primary" th:text="${totalLivros}">0</div>
+                <div class="stat-number primary" th:text="${livros.size()}">0</div>
                 <div class="stat-label">Total de Livros</div>
             </div>
             <div class="stat-card success">
-                <div class="stat-number success" th:text="${totalUsuarios}">0</div>
-                <div class="stat-label">Total de Usuários</div>
-            </div>
-            <div class="stat-card warning">
-                <div class="stat-number warning" th:text="${totalEmprestimos}">0</div>
-                <div class="stat-label">Total de Empréstimos</div>
-            </div>
-            <div class="stat-card danger">
-                <div class="stat-number danger" th:text="${emprestimosAtrasados}">0</div>
-                <div class="stat-label">Empréstimos Atrasados</div>
+                <div class="stat-number success" th:text="${livrosPorCategoria.size()}">0</div>
+                <div class="stat-label">Categorias Diferentes</div>
             </div>
         </div>
 
         <!-- Gráficos -->
         <div class="charts-grid">
+            <!-- Livros por Categoria -->
+            <div class="chart-card">
+                <h3 class="chart-title">📚 Livros por Categoria</h3>
+                <div class="chart-content">
+                    <div th:if="${livrosPorCategoria != null and !livrosPorCategoria.isEmpty()}">
+                        <div th:each="entry : ${livrosPorCategoria}" class="chart-item">
+                            <span class="chart-label" th:text="${entry.key}">Categoria</span>
+                            <span class="chart-value" th:text="${entry.value}">0</span>
+                        </div>
+                    </div>
+                    <div th:if="${livrosPorCategoria == null or livrosPorCategoria.isEmpty()}" class="empty-state">
+                        <div class="icon">📚</div>
+                        <p>Nenhum livro cadastrado ainda</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Livros Mais Emprestados -->
             <div class="chart-card">
                 <h3 class="chart-title">📖 Livros Mais Emprestados</h3>
@@ -304,46 +297,29 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Usuários Mais Ativos -->
-            <div class="chart-card">
-                <h3 class="chart-title">👥 Usuários Mais Ativos</h3>
-                <div class="chart-content">
-                    <div th:if="${usuariosMaisAtivos != null and !usuariosMaisAtivos.isEmpty()}">
-                        <div th:each="entry : ${usuariosMaisAtivos}" class="chart-item">
-                            <span class="chart-label" th:text="${entry.key}">Nome do Usuário</span>
-                            <span class="chart-value" th:text="${entry.value}">0</span>
-                        </div>
-                    </div>
-                    <div th:if="${usuariosMaisAtivos == null or usuariosMaisAtivos.isEmpty()}" class="empty-state">
-                        <div class="icon">👤</div>
-                        <p>Nenhum empréstimo registrado ainda</p>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- Links para Relatórios Detalhados -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3 style="margin-bottom: 1rem;">📖 Relatório de Livros</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Análise detalhada do acervo</p>
-                <a th:href="@{/relatorios/livros}" class="btn" style="background-color: #007bff; color: white;">Ver Relatório</a>
-            </div>
-            <div class="stat-card">
-                <h3 style="margin-bottom: 1rem;">👥 Relatório de Usuários</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Análise de usuários ativos</p>
-                <a th:href="@{/relatorios/usuarios}" class="btn" style="background-color: #28a745; color: white;">Ver Relatório</a>
-            </div>
-            <div class="stat-card">
-                <h3 style="margin-bottom: 1rem;">🔄 Relatório de Empréstimos</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Análise de empréstimos</p>
-                <a th:href="@{/relatorios/emprestimos}" class="btn" style="background-color: #ffc107; color: #212529;">Ver Relatório</a>
-            </div>
-            <div class="stat-card">
-                <h3 style="margin-bottom: 1rem;">📈 Estatísticas Gerais</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Métricas e indicadores</p>
-                <a th:href="@{/relatorios/estatisticas}" class="btn" style="background-color: #dc3545; color: white;">Ver Estatísticas</a>
+        <!-- Lista de Todos os Livros -->
+        <div class="chart-card">
+            <h3 class="chart-title">📚 Todos os Livros Cadastrados</h3>
+            <div class="chart-content">
+                <div th:if="${livros != null and !livros.isEmpty()}">
+                    <div th:each="livro : ${livros}" class="chart-item">
+                        <div>
+                            <span class="chart-label" th:text="${livro.titulo}">Título do Livro</span>
+                            <br>
+                            <small style="color: #666;" th:text="${livro.autor}">Autor</small>
+                        </div>
+                        <div>
+                            <span class="chart-value" th:text="${livro.quantidade}">0</span>
+                            <small style="color: #666;">exemplares</small>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${livros == null or livros.isEmpty()}" class="empty-state">
+                    <div class="icon">📚</div>
+                    <p>Nenhum livro cadastrado ainda</p>
+                </div>
             </div>
         </div>
     </div>

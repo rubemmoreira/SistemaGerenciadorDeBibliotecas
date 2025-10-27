@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Novo Empréstimo - Biblioteca</title>
+    <title>Editar Empréstimo - Biblioteca</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -89,22 +89,23 @@
         </div>
         
         <div th:if="${success}" class="alert alert-success">
-            ✅ <span th:text="${success}">Empréstimo realizado com sucesso!</span>
+            ✅ <span th:text="${success}">Empréstimo editado com sucesso!</span>
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2>➕ Novo Empréstimo</h2>
+            <h2>✏️ Editar Empréstimo</h2>
             <a th:href="@{/emprestimos}" class="btn btn-secondary">🔄 Voltar aos Empréstimos</a>
         </div>
 
         <div style="background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <form th:action="@{/emprestimos/novo}" method="post">
+            <form th:action="@{'/emprestimos/editar/' + ${emprestimo.id}}" method="post">
                 <div class="form-group">
                     <label for="livroId">📖 Livro:</label>
                     <select id="livroId" name="livroId" required>
                         <option value="">Selecione um livro</option>
                         <option th:each="livro : ${livros}" 
                                 th:value="${livro.id}" 
+                                th:selected="${livro.id == emprestimo.livro.id}"
                                 th:text="${livro.titulo + ' (' + livro.autor + ')'}">Livro Título (Autor)</option>
                     </select>
                 </div>
@@ -115,18 +116,47 @@
                         <option value="">Selecione um usuário</option>
                         <option th:each="usuario : ${usuarios}" 
                                 th:value="${usuario.id}" 
+                                th:selected="${usuario.id == emprestimo.usuario.id}"
                                 th:text="${usuario.nome + ' (' + usuario.email + ')'}">Nome do Usuário (Email)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="diasEmprestimo">📅 Dias de Empréstimo (Padrão: 7 dias):</label>
-                    <input type="number" id="diasEmprestimo" name="diasEmprestimo" value="7" min="1" required>
+                    <label for="status">📊 Status:</label>
+                    <select id="status" name="status" required>
+                        <option value="EMPRESTADO" th:selected="${emprestimo.status.name() == 'EMPRESTADO'}">Emprestado</option>
+                        <option value="DEVOLVIDO" th:selected="${emprestimo.status.name() == 'DEVOLVIDO'}">Devolvido</option>
+                        <option value="ATRASADO" th:selected="${emprestimo.status.name() == 'ATRASADO'}">Atrasado</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dataEmprestimo">📅 Data do Empréstimo:</label>
+                    <input type="datetime-local" id="dataEmprestimo" name="dataEmprestimo" 
+                           th:value="${#temporals.format(emprestimo.dataEmprestimo, 'yyyy-MM-dd\'T\'HH:mm')}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dataDevolucaoPrevista">📅 Data de Devolução Prevista:</label>
+                    <input type="datetime-local" id="dataDevolucaoPrevista" name="dataDevolucaoPrevista" 
+                           th:value="${#temporals.format(emprestimo.dataDevolucaoPrevista, 'yyyy-MM-dd\'T\'HH:mm')}" required>
+                </div>
+
+                <div class="form-group" th:if="${emprestimo.dataDevolucaoReal != null}">
+                    <label for="dataDevolucaoReal">✅ Data de Devolução Real:</label>
+                    <input type="datetime-local" id="dataDevolucaoReal" name="dataDevolucaoReal" 
+                           th:value="${#temporals.format(emprestimo.dataDevolucaoReal, 'yyyy-MM-dd\'T\'HH:mm')}">
+                </div>
+
+                <div class="form-group">
+                    <label for="observacoes">📝 Observações:</label>
+                    <textarea id="observacoes" name="observacoes" rows="3" style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;" 
+                              th:text="${emprestimo.observacoes}"></textarea>
                 </div>
 
                 <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
                     <a th:href="@{/emprestimos}" class="btn btn-secondary">❌ Cancelar</a>
-                    <button type="submit" class="btn btn-primary">✅ Realizar Empréstimo</button>
+                    <button type="submit" class="btn btn-primary">✅ Salvar Alterações</button>
                 </div>
             </form>
         </div>
