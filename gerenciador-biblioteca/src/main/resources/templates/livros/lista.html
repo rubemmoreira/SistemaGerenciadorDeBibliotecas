@@ -1,125 +1,414 @@
+<div th:if="${usuarioNome}" style="background: #f8f9fa; padding: 10px; text-align: right;">
+    Logado como: <span th:text="${usuarioNome}"></span>
+    | <a href="/logout">Sair</a>
+</div>
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Livros - Biblioteca</title>
-    <link rel="stylesheet" href="/css/global.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .livros-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .livro-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .livro-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .livro-header {
+            display: flex;
+            justify-content: between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .livro-titulo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 0.5rem;
+            flex: 1;
+        }
+
+        .livro-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        .livro-info {
+            margin-bottom: 1rem;
+        }
+
+        .livro-info p {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 80px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .page-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+            
+            .livros-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-input {
+                min-width: auto;
+            }
+        }
+    </style>
 </head>
 <body>
+    <header class="header">
+        <div class="header-content">
+            <h1>📚 Sistema de Gerenciamento de Biblioteca</h1>
+            <div class="user-info">
+                <span th:if="${#authorization.expression('isAuthenticated()')}" 
+                      th:text="'Usuário: ' + ${#authentication.name}"></span>
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">🚪 Sair</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
     <div class="container">
-        <div class="header">
-            <div class="header-content">
-                <h1>📖 Sistema de Gerenciamento de Biblioteca</h1>
-                <div class="user-info">
-                    <span>👤 <span th:text="${#authentication.name}">admin@biblioteca.com</span></span>
-                    <a th:href="@{/logout}" class="btn btn-secondary">🚪 Sair</a>
-                </div>
+        <!-- Mensagens de sucesso -->
+        <div th:if="${param.success}" class="alert alert-success">
+            ✅ Livro cadastrado com sucesso!
+        </div>
+
+        <div class="page-actions">
+            <h2 class="page-title">📖 Gerenciar Livros</h2>
+            <div class="action-buttons">
+                <a th:href="@{/livros/cadastro}" class="btn btn-primary">
+                    ➕ Cadastrar Novo Livro
+                </a>
+                <a th:href="@{/}" class="btn btn-secondary">
+                    🏠 Voltar ao Início
+                </a>
             </div>
         </div>
 
-        <!-- Mensagens de sucesso/erro -->
-        <div th:if="${success}" class="alert alert-success">
-            ✅ <span th:text="${success}">Operação realizada com sucesso!</span>
-        </div>
-        
-        <div th:if="${error}" class="alert alert-danger">
-            ❌ <span th:text="${error}">Erro na operação!</span>
+        <!-- Barra de pesquisa -->
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="🔍 Pesquisar por título, autor ou ISBN...">
+            <button class="search-btn">Pesquisar</button>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2 th:text="${usuarioLogado != null and usuarioLogado.isUsuario()} ? '📚 Ver Livros' : 'Gerenciar Livros'">Livros</h2>
-            <a th:href="@{/livros/cadastro}" class="btn btn-primary" th:if="${usuarioLogado != null and !usuarioLogado.isUsuario()}">Novo Livro</a>
-        </div>
-
-        <!-- Barra de busca -->
-        <div class="card" style="margin-bottom: 2rem;">
-            <form th:action="@{/livros/buscar}" method="get" style="display: flex; gap: 1rem; align-items: center;">
-                <div style="flex: 1;">
-                    <input type="text" name="termo" placeholder="Buscar por título, autor ou categoria..." 
-                           class="form-control" th:value="${termoBusca}">
+        <div class="card">
+            <div th:if="${livros != null and !livros.empty}">
+                <div class="livros-grid">
+                    <div th:each="livro : ${livros}" class="livro-card">
+                        <div class="livro-header">
+                            <h3 class="livro-titulo" th:text="${livro.titulo}">Título do Livro</h3>
+                            <div class="livro-actions">
+                                <button class="btn btn-info btn-small">✏️</button>
+                                <button class="btn btn-danger btn-small">🗑️</button>
+                            </div>
+                        </div>
+                        
+                        <div class="livro-info">
+                            <p>
+                                <span class="info-label">✍️ Autor:</span>
+                                <span th:text="${livro.autor}">Nome do Autor</span>
+                            </p>
+                            <p th:if="${livro.isbn}">
+                                <span class="info-label">📋 ISBN:</span>
+                                <span th:text="${livro.isbn}">ISBN</span>
+                            </p>
+                            <p th:if="${livro.editora}">
+                                <span class="info-label">🏢 Editora:</span>
+                                <span th:text="${livro.editora}">Editora</span>
+                            </p>
+                            <p th:if="${livro.anoPublicacao}">
+                                <span class="info-label">📅 Ano:</span>
+                                <span th:text="${livro.anoPublicacao}">2024</span>
+                            </p>
+                            <p th:if="${livro.categoria}">
+                                <span class="info-label">📂 Categoria:</span>
+                                <span th:text="${livro.categoria}">Categoria</span>
+                            </p>
+                            <p th:if="${livro.quantidade}">
+                                <span class="info-label">📦 Estoque:</span>
+                                <span th:text="${livro.quantidade}">1</span> unidades
+                            </p>
+                        </div>
+                        
+                        <div th:if="${livro.descricao}" class="livro-descricao">
+                            <p><strong>📝 Descrição:</strong></p>
+                            <p th:text="${livro.descricao}" style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                                Descrição do livro...
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-info">Buscar</button>
-                <a th:href="@{/livros}" class="btn btn-secondary">Limpar</a>
-            </form>
+            </div>
             
-            <!-- Filtros rápidos -->
-            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <span style="color: #666; font-weight: 500;">Filtros rápidos:</span>
-                <a th:href="@{/livros/buscar/categoria(categoria='Programação')}" class="btn" style="background-color: #e9ecef; color: #495057; font-size: 0.8rem;">Programação</a>
-                <a th:href="@{/livros/buscar/categoria(categoria='Ficção')}" class="btn" style="background-color: #e9ecef; color: #495057; font-size: 0.8rem;">Ficção</a>
-                <a th:href="@{/livros/buscar/categoria(categoria='Fantasia')}" class="btn" style="background-color: #e9ecef; color: #495057; font-size: 0.8rem;">Fantasia</a>
+            <div th:if="${livros == null or livros.empty}" class="empty-state">
+                <div class="icon">📚</div>
+                <h3>Nenhum livro cadastrado</h3>
+                <p>Comece cadastrando o primeiro livro no acervo da biblioteca.</p>
+                <a th:href="@{/livros/cadastro}" class="btn btn-primary" style="margin-top: 1rem;">
+                    ➕ Cadastrar Primeiro Livro
+                </a>
             </div>
-        </div>
-
-        <!-- Filtro ativo -->
-        <div th:if="${filtroAtivo}" class="alert alert-info">
-            <strong>Filtro ativo:</strong> <span th:text="${filtroAtivo}">Categoria: Programação</span>
-        </div>
-
-        <div th:if="${livros != null and !livros.isEmpty()}">
-            <div class="cards-grid">
-                <div th:each="livro : ${livros}" class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
-                        <div style="font-weight: bold; color: #007bff;"><span th:text="${livro.titulo}">Título do Livro</span></div>
-                        <div class="status-badge status-info" th:text="'Estoque: ' + ${livro.quantidade}">Estoque: 10</div>
-                    </div>
-                    
-                    <div style="margin-bottom: 1rem;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                            <span style="color: #666; font-weight: 500;">Autor:</span>
-                            <span th:text="${livro.autor}">Nome do Autor</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                            <span style="color: #666; font-weight: 500;">Editora:</span>
-                            <span th:text="${livro.editora}">Editora Fictícia</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                            <span style="color: #666; font-weight: 500;">Ano:</span>
-                            <span th:text="${livro.anoPublicacao}">2024</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                            <span style="color: #666; font-weight: 500;">Categoria:</span>
-                            <span th:text="${livro.categoria}">Ficção</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                            <span style="color: #666; font-weight: 500;">ISBN:</span>
-                            <span th:text="${livro.isbn}">978-1234567890</span>
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <!-- Visualizar - todos podem ver -->
-                        <a th:href="@{'/livros/visualizar/' + ${livro.id}}" class="btn btn-info">
-                            Visualizar
-                        </a>
-                        
-                        <!-- Editar - apenas ADMIN e BIBLIOTECARIO -->
-                        <a th:href="@{'/livros/editar/' + ${livro.id}}" 
-                           class="btn btn-warning"
-                           th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''BIBLIOTECARIO'')')}">
-                            Editar
-                        </a>
-                        
-                        <!-- Deletar - apenas ADMIN -->
-                        <a th:href="@{'/livros/deletar/' + ${livro.id}}" 
-                           class="btn btn-danger"
-                           th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
-                            Deletar
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div th:if="${livros == null or livros.isEmpty()}" class="empty-state">
-            <div class="icon">📖</div>
-            <h3>Nenhum livro encontrado</h3>
-            <p>Comece cadastrando o primeiro livro do acervo.</p>
-            <a th:href="@{/livros/cadastro}" class="btn btn-primary" style="margin-top: 1rem;">
-                ➕ Cadastrar Primeiro Livro
-            </a>
         </div>
     </div>
+
+    <script>
+        // Funcionalidade básica de pesquisa
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.search-input');
+            const searchBtn = document.querySelector('.search-btn');
+            const livroCards = document.querySelectorAll('.livro-card');
+            
+            function filterLivros() {
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                livroCards.forEach(card => {
+                    const titulo = card.querySelector('.livro-titulo').textContent.toLowerCase();
+                    const autor = card.querySelector('.livro-info p:nth-child(1) span:nth-child(2)').textContent.toLowerCase();
+                    const isbnElement = card.querySelector('.livro-info p:nth-child(2) span:nth-child(2)');
+                    const isbn = isbnElement ? isbnElement.textContent.toLowerCase() : '';
+                    
+                    const matches = titulo.includes(searchTerm) || 
+                                  autor.includes(searchTerm) || 
+                                  isbn.includes(searchTerm);
+                    
+                    card.style.display = matches ? 'block' : 'none';
+                });
+            }
+            
+            searchBtn.addEventListener('click', filterLivros);
+            searchInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    filterLivros();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

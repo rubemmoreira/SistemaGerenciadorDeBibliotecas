@@ -1,25 +1,44 @@
-package com.biblioteca.app.model;
+package com.biblioteca.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "livro")
+@Table(name = "livros")
 public class Livro {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(nullable = false)
     private String titulo;
-    private String autor;
-    private String isbn;
-    private String editora;
-    private Integer anoPublicacao;
-    private String categoria;
-    private Integer quantidade;
-    private String descricao;
     
-    // Getters e Setters COMPLETOS
+    @Column(nullable = false)
+    private String autor;
+    
+    @Column(nullable = false)
+    private String isbn;
+    
+    private Integer anoPublicacao;
+    
+    @Column(nullable = false)
+    private Boolean disponivel = true;
+    
+    @Column(name = "data_criacao")
+    private LocalDateTime dataCriacao = LocalDateTime.now();
+    
+    // Construtores
+    public Livro() {}
+    
+    public Livro(String titulo, String autor, String isbn, Integer anoPublicacao) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.isbn = isbn;
+        this.anoPublicacao = anoPublicacao;
+    }
+    
+    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
@@ -32,18 +51,12 @@ public class Livro {
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
     
-    public String getEditora() { return editora; }
-    public void setEditora(String editora) { this.editora = editora; }
-    
     public Integer getAnoPublicacao() { return anoPublicacao; }
     public void setAnoPublicacao(Integer anoPublicacao) { this.anoPublicacao = anoPublicacao; }
     
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public Boolean getDisponivel() { return disponivel; }
+    public void setDisponivel(Boolean disponivel) { this.disponivel = disponivel; }
     
-    public Integer getQuantidade() { return quantidade; }
-    public void setQuantidade(Integer quantidade) { this.quantidade = quantidade; }
-    
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public LocalDateTime getDataCriacao() { return dataCriacao; }
+    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
 }
