@@ -1,7 +1,7 @@
 package com.biblioteca.app.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "emprestimo")
@@ -19,46 +19,110 @@ public class Emprestimo {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
     
-    @Column(nullable = false)
-    private LocalDate dataEmprestimo;
+    @Column(name = "data_emprestimo", nullable = false)
+    private LocalDateTime dataEmprestimo;
     
-    private LocalDate dataDevolucaoPrevista;
+    @Column(name = "data_devolucao_prevista", nullable = false)
+    private LocalDateTime dataDevolucaoPrevista;
     
-    private LocalDate dataDevolucaoReal;
+    @Column(name = "data_devolucao_real")
+    private LocalDateTime dataDevolucaoReal;
     
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private StatusEmprestimo status;
     
+    @Column(name = "observacoes", length = 500)
     private String observacoes;
     
-    // Getters e Setters COMPLETOS
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Construtores
+    public Emprestimo() {}
     
-    public Livro getLivro() { return livro; }
-    public void setLivro(Livro livro) { this.livro = livro; }
+    public Emprestimo(Livro livro, Usuario usuario, LocalDateTime dataEmprestimo, 
+                     LocalDateTime dataDevolucaoPrevista, StatusEmprestimo status) {
+        this.livro = livro;
+        this.usuario = usuario;
+        this.dataEmprestimo = dataEmprestimo;
+        this.dataDevolucaoPrevista = dataDevolucaoPrevista;
+        this.status = status;
+    }
     
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    // Getters e Setters
+    public Long getId() {
+        return id;
+    }
     
-    public LocalDate getDataEmprestimo() { return dataEmprestimo; }
-    public void setDataEmprestimo(LocalDate dataEmprestimo) { this.dataEmprestimo = dataEmprestimo; }
+    public void setId(Long id) {
+        this.id = id;
+    }
     
-    public LocalDate getDataDevolucaoPrevista() { return dataDevolucaoPrevista; }
-    public void setDataDevolucaoPrevista(LocalDate dataDevolucaoPrevista) { this.dataDevolucaoPrevista = dataDevolucaoPrevista; }
+    public Livro getLivro() {
+        return livro;
+    }
     
-    public LocalDate getDataDevolucaoReal() { return dataDevolucaoReal; }
-    public void setDataDevolucaoReal(LocalDate dataDevolucaoReal) { this.dataDevolucaoReal = dataDevolucaoReal; }
+    public void setLivro(Livro livro) {
+        this.livro = livro;
+    }
     
-    public StatusEmprestimo getStatus() { return status; }
-    public void setStatus(StatusEmprestimo status) { this.status = status; }
+    public Usuario getUsuario() {
+        return usuario;
+    }
     
-    public String getObservacoes() { return observacoes; }
-    public void setObservacoes(String observacoes) { this.observacoes = observacoes; }
-}
-
-enum StatusEmprestimo {
-    ATIVO,
-    DEVOLVIDO,
-    ATRASADO
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
+    public LocalDateTime getDataEmprestimo() {
+        return dataEmprestimo;
+    }
+    
+    public void setDataEmprestimo(LocalDateTime dataEmprestimo) {
+        this.dataEmprestimo = dataEmprestimo;
+    }
+    
+    public LocalDateTime getDataDevolucaoPrevista() {
+        return dataDevolucaoPrevista;
+    }
+    
+    public void setDataDevolucaoPrevista(LocalDateTime dataDevolucaoPrevista) {
+        this.dataDevolucaoPrevista = dataDevolucaoPrevista;
+    }
+    
+    public LocalDateTime getDataDevolucaoReal() {
+        return dataDevolucaoReal;
+    }
+    
+    public void setDataDevolucaoReal(LocalDateTime dataDevolucaoReal) {
+        this.dataDevolucaoReal = dataDevolucaoReal;
+    }
+    
+    public StatusEmprestimo getStatus() {
+        return status;
+    }
+    
+    public void setStatus(StatusEmprestimo status) {
+        this.status = status;
+    }
+    
+    public String getObservacoes() {
+        return observacoes;
+    }
+    
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+    
+    // Métodos auxiliares
+    public boolean isAtrasado() {
+        return status == StatusEmprestimo.EMPRESTADO && 
+               LocalDateTime.now().isAfter(dataDevolucaoPrevista);
+    }
+    
+    public boolean isDevolvido() {
+        return status == StatusEmprestimo.DEVOLVIDO;
+    }
+    
+    public boolean isEmprestado() {
+        return status == StatusEmprestimo.EMPRESTADO;
+    }
 }

@@ -2,26 +2,134 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Gerenciar Empréstimos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empréstimos - Biblioteca</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        .header { background: #007bff; color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-        .btn { padding: 10px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin: 5px;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔄 Gerenciar Empréstimos</h1>
-            <p>Controle os empréstimos e devoluções</p>
+            <h1>🔄 Sistema de Gerenciamento de Biblioteca</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>👤 <span th:text="${#authentication.name}">admin@biblioteca.com</span></span>
+                <a th:href="@{/logout}" class="btn btn-secondary">🚪 Sair</a>
+            </div>
+        </div>
+
+        <!-- Mensagens de erro -->
+        <div th:if="${error}" class="alert alert-danger">
+            ❌ <span th:text="${error}">Erro na operação!</span>
         </div>
         
-        <a th:href="@{/}" class="btn">🏠 Voltar ao Início</a>
-        
-        <div style="margin-top: 20px;">
-            <h2>Controle de Empréstimos</h2>
-            <p>Funcionalidade em desenvolvimento...</p>
+        <div th:if="${success}" class="alert alert-success">
+            ✅ <span th:text="${success}">Operação realizada com sucesso!</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 th:text="${usuarioLogado != null and usuarioLogado.isUsuario()} ? '📋 Meus Empréstimos' : '🔄 Gerenciar Empréstimos'">Empréstimos</h2>
+            <a th:href="@{/emprestimos/novo}" class="btn btn-primary" th:if="${usuarioLogado != null and !usuarioLogado.isUsuario()}">➕ Novo Empréstimo</a>
+        </div>
+
+        <!-- Lista de Empréstimos -->
+        <div th:if="${emprestimos != null and !emprestimos.isEmpty()}">
+            <h3>📋 Lista de Empréstimos:</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem;">
+                <div th:each="emprestimo : ${emprestimos}" 
+                     style="background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
+                        <strong>🆔 Empréstimo #<span th:text="${emprestimo.id}">1</span></strong>
+                        <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; background-color: #d4edda; color: #155724;"
+                              th:text="${emprestimo.status.descricao}">Status</span>
+                    </div>
+                    
+                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 500;">📖 Livro:</span>
+                            <span th:text="${emprestimo.livro.titulo}">Título</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 500;">👤 Usuário:</span>
+                            <span th:text="${emprestimo.usuario.nome}">Nome</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 500;">📅 Data:</span>
+                            <span th:text="${#temporals.format(emprestimo.dataEmprestimo, 'dd/MM/yyyy')}">01/01/2024</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 500;">📅 Devolução:</span>
+                            <span th:text="${#temporals.format(emprestimo.dataDevolucaoPrevista, 'dd/MM/yyyy')}">08/01/2024</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <a th:href="@{'/emprestimos/visualizar/' + ${emprestimo.id}}" class="btn" style="background-color: #17a2b8; color: white;">👁️ Visualizar</a>
+                        <a th:href="@{'/emprestimos/editar/' + ${emprestimo.id}}" class="btn" style="background-color: #ffc107; color: #212529;" th:if="${usuarioLogado != null and !usuarioLogado.isUsuario()}">✏️ Editar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${emprestimos == null or emprestimos.isEmpty()}" style="text-align: center; padding: 3rem; color: #6c757d;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
+            <h3>Nenhum empréstimo encontrado</h3>
+            <p th:text="${usuarioLogado != null and usuarioLogado.isUsuario()} ? 'Você ainda não possui empréstimos.' : 'Não há empréstimos para exibir no momento.'">Não há empréstimos para exibir no momento.</p>
+            <a th:href="@{/emprestimos/novo}" class="btn btn-primary" th:if="${usuarioLogado != null and !usuarioLogado.isUsuario()}">➕ Criar Primeiro Empréstimo</a>
+        </div>
+
+        <div style="margin-top: 2rem; text-align: center;">
+            <a th:href="@{/home}" class="btn btn-secondary">🏠 Voltar ao Início</a>
         </div>
     </div>
 </body>
