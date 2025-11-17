@@ -25,11 +25,15 @@ public interface EmprestimoRepository extends JpaRepository<Emprestimo, Long> {
     // Validações avançadas
     long countByUsuarioIdAndStatus(Long usuarioId, StatusEmprestimo status);
     
+    long countByLivroIdAndStatus(Long livroId, StatusEmprestimo status);
+    
     boolean existsByLivroIdAndStatus(Long livroId, StatusEmprestimo status);
     
     boolean existsByUsuarioIdAndLivroIdAndStatus(Long usuarioId, Long livroId, StatusEmprestimo status);
     
     List<Emprestimo> findByUsuarioIdAndStatus(Long usuarioId, StatusEmprestimo status);
+    
+    List<Emprestimo> findByLivroIdAndStatus(Long livroId, StatusEmprestimo status);
     
     // Buscar empréstimos ativos (emprestado)
     @Query("SELECT e FROM Emprestimo e WHERE e.status = 'EMPRESTADO'")

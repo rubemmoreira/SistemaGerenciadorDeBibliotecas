@@ -68,10 +68,13 @@ public class EmprestimoController {
     }
 
     @PostMapping("/novo")
-    public String criarEmprestimo(@ModelAttribute Emprestimo emprestimo, RedirectAttributes redirectAttributes) {
+    public String criarEmprestimo(@RequestParam Long livroId, 
+                                   @RequestParam Long usuarioId,
+                                   @RequestParam(defaultValue = "7") Integer diasEmprestimo,
+                                   RedirectAttributes redirectAttributes) {
         
         try {
-            emprestimoService.realizarEmprestimo(emprestimo.getLivro().getId(), emprestimo.getUsuario().getId());
+            emprestimoService.realizarEmprestimo(livroId, usuarioId, diasEmprestimo);
             redirectAttributes.addFlashAttribute("success", "Empréstimo realizado com sucesso!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erro ao criar empréstimo: " + e.getMessage());
@@ -106,10 +109,19 @@ public class EmprestimoController {
     }
 
     @PostMapping("/editar/{id}")
-    public String editarEmprestimo(@PathVariable Long id, @ModelAttribute Emprestimo emprestimo, RedirectAttributes redirectAttributes) {
+    public String editarEmprestimo(@PathVariable Long id, 
+                                    @RequestParam Long livroId,
+                                    @RequestParam Long usuarioId,
+                                    @RequestParam String status,
+                                    @RequestParam String dataEmprestimo,
+                                    @RequestParam String dataDevolucaoPrevista,
+                                    @RequestParam(required = false) String dataDevolucaoReal,
+                                    @RequestParam(required = false) String observacoes,
+                                    RedirectAttributes redirectAttributes) {
         try {
-            emprestimo.setId(id);
-            emprestimoService.save(emprestimo);
+            emprestimoService.atualizarEmprestimo(id, livroId, usuarioId, status, 
+                                                   dataEmprestimo, dataDevolucaoPrevista, 
+                                                   dataDevolucaoReal, observacoes);
             redirectAttributes.addFlashAttribute("success", "Empréstimo editado com sucesso!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erro ao editar empréstimo: " + e.getMessage());
@@ -181,4 +193,5 @@ public class EmprestimoController {
             return "emprestimos/lista";
         }
     }
+    
 }
